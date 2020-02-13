@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"regexp"
+	"strings"
 	"sync"
 )
 
@@ -39,8 +40,8 @@ var (
 func init() {
 	log.SetLevel(log.DebugLevel)
 
-	rootCmd.PersistentFlags().StringVarP(&uploadPath, "result-path", "r", "/var/lib/camrecorder/events", "path to the files with resulting video events - /var/lib/camrecorder/events")
-	rootCmd.PersistentFlags().StringVarP(&videoPath, "video-path", "v", "/var/lib/camrecorder/video", "path to video files saved from the stream, default value - /var/lib/camrecorder/video")
+	rootCmd.PersistentFlags().StringVarP(&uploadPath, "result-path", "r", "/var/lib/camrecorder/events/", "path to the files with resulting video events - /var/lib/camrecorder/events")
+	rootCmd.PersistentFlags().StringVarP(&videoPath, "video-path", "v", "/var/lib/camrecorder/video/", "path to video files saved from the stream, default value - /var/lib/camrecorder/video")
 	rootCmd.PersistentFlags().StringVar(&pathToEvents, "path-to-events", "01/pic", "path to JPG files after date named directory")
 	rootCmd.PersistentFlags().StringVarP(&cameraZoneId, "zone-id", "z", "UTC", "zone id configured on the camera, default value - UTC")
 }
@@ -66,6 +67,15 @@ func rootCommand(cmd *cobra.Command, args []string) {
 	backblazePassword = backblazeParams[2]
 	backblazeBucketName = backblazeParams[3]
 	bucketPrefix = backblazeParams[4]
+	if !strings.HasSuffix(campath, "/") && strings.HasSuffix(campath, "\\") {
+		campath = campath + "/"
+	}
+	if !strings.HasSuffix(uploadPath, "/") && strings.HasSuffix(uploadPath, "\\") {
+		uploadPath = uploadPath + "/"
+	}
+	if !strings.HasSuffix(videoPath, "/") && strings.HasSuffix(videoPath, "\\") {
+		videoPath = videoPath + "/"
+	}
 
 	printConfiguration()
 
