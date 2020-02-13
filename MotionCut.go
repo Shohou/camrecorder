@@ -136,6 +136,12 @@ func processFile(ctx context.Context, file string, fileName string, fileTime tim
 			log.Debugf("Video file %s is in time range for event", videoFile.Name())
 			videoFiles = append(videoFiles, videoPath+videoFile.Name())
 			lastVideoFileTime = videoFileTime
+		} else if err == nil && videoFileTime.Before(fileTime.Add(24*time.Hour)) {
+			log.Infof("Video file is too old, deleting: %s", videoFile.Name())
+			removeErr := os.Remove(videoPath + videoFile.Name())
+			if removeErr != nil {
+				log.Errorf("Failed to delete file: %s", removeErr)
+			}
 		} else if err != nil {
 			log.Errorf("Skipping video file %s because of error: %s", videoFile.Name(), err)
 		} else {
