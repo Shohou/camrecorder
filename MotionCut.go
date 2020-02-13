@@ -63,7 +63,7 @@ func MotionCut(ctx context.Context, cancel context.CancelFunc, filesToUpload cha
 				lastDate := time.Date(lastFileTime.Year(), lastFileTime.Month(), lastFileTime.Day(), 0, 0, 0, 0, cameraLocation)
 				if dirDate.After(lastDate) || dirDate.Equal(lastDate) {
 					log.Debugf("Processing date: %s", dirDate)
-					lastFileTime = processFilesForDate(ctx, campath+"/"+dir.Name(), lastFileTime, filesToUpload)
+					lastFileTime = processFilesForDate(ctx, campath+dir.Name(), lastFileTime, filesToUpload)
 					log.Debugf("Last processed file time: %s", lastFileTime)
 				}
 			}
@@ -73,7 +73,7 @@ func MotionCut(ctx context.Context, cancel context.CancelFunc, filesToUpload cha
 }
 
 func processFilesForDate(ctx context.Context, dirPath string, lastFileTime time.Time, filesToUpload chan FileToUpload) time.Time {
-	path := dirPath + pathToEvents
+	path := dirPath + "/" + pathToEvents
 
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
