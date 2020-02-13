@@ -18,7 +18,7 @@ func RecordCamVideo(ctx context.Context, cancel context.CancelFunc) {
 	for {
 		ffmpegCmd := exec.Command("ffmpeg", "-i", streamUrl,
 			"-vcodec", "copy", "-acodec", "copy", "-map", "0", "-f", "segment", "-segment_time", "60", "-strftime", "1",
-			"-loglevel", "level+info", videoPath+"cam%Y-%m-%d_%H-%M-%S.mkv")
+			"-loglevel", "level+info", "-nostats", videoPath+"cam%Y-%m-%d_%H-%M-%S.mkv")
 
 		signalChannel := make(chan os.Signal)
 		signal.Notify(signalChannel, os.Interrupt, os.Kill)
@@ -60,6 +60,10 @@ func LaunchFFmpeg(ctx context.Context, logPrefix string, ffmpegCmd *exec.Cmd) er
 
 	go logstd(logPrefix, stdout)
 	go logstd(logPrefix, stderr)
+
+	go func() {
+		ffmpegCmd.Wait()
+	}()
 
 	for ffmpegCmd.ProcessState == nil || !ffmpegCmd.ProcessState.Exited() {
 		select {
