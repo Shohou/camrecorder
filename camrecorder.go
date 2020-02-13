@@ -67,13 +67,13 @@ func rootCommand(cmd *cobra.Command, args []string) {
 	backblazePassword = backblazeParams[2]
 	backblazeBucketName = backblazeParams[3]
 	bucketPrefix = backblazeParams[4]
-	if !strings.HasSuffix(campath, "/") && strings.HasSuffix(campath, "\\") {
+	if !strings.HasSuffix(campath, "/") && !strings.HasSuffix(campath, "\\") {
 		campath = campath + "/"
 	}
-	if !strings.HasSuffix(uploadPath, "/") && strings.HasSuffix(uploadPath, "\\") {
+	if !strings.HasSuffix(uploadPath, "/") && !strings.HasSuffix(uploadPath, "\\") {
 		uploadPath = uploadPath + "/"
 	}
-	if !strings.HasSuffix(videoPath, "/") && strings.HasSuffix(videoPath, "\\") {
+	if !strings.HasSuffix(videoPath, "/") && !strings.HasSuffix(videoPath, "\\") {
 		videoPath = videoPath + "/"
 	}
 
