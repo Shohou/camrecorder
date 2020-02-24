@@ -209,6 +209,8 @@ func processVideo(ctx context.Context, eventFile string, eventFileName string, f
 		}
 		videoFileName := eventPath + "/" + eventFileName[0:len(eventFileName)-4] + ".mkv"
 		ffmpegCmd := exec.Command("ffmpeg", "-loglevel", "level+info", "-f", "concat", "-safe", "0", "-i", tmpfile.Name(), "-c", "copy", videoFileName)
+		//example with transcoding
+		//ffmpeg -loglevel level+info -i cam2020-02-14_00-18-50.mkv -i cam2020-02-14_00-19-50.mkv -filter_complex "[0:v:0][0:a:0][1:v:0][1:a:0]concat=n=2:v=1:a=1[outv][outa]" -map "[outv]" -map "[outa]" result_transcoded.mkv
 
 		err = LaunchFFmpeg(ctx, eventFileName, ffmpegCmd)
 		if err != nil {
