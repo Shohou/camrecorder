@@ -16,9 +16,9 @@ import (
 func RecordCamVideo(ctx context.Context, cancel context.CancelFunc) {
 	defer cancel()
 	for {
-		ffmpegCmd := exec.Command("ffmpeg", "-i", streamUrl,
+		ffmpegCmd := exec.Command("ffmpeg", "-use_wallclock_as_timestamps", "1", "-i", streamUrl,
 			"-vcodec", "copy", "-acodec", "copy", "-map", "0", "-f", "segment", "-segment_time", "60", "-strftime", "1",
-			"-reset_timestamps", "1", "-use_wallclock_as_timestamps", "1", "-loglevel", "level+info", "-nostats", videoPath+"cam%Y-%m-%d_%H-%M-%S.mkv")
+			"-reset_timestamps", "1", "-loglevel", "level+info", "-nostats", videoPath+"cam%Y-%m-%d_%H-%M-%S.mkv")
 
 		signalChannel := make(chan os.Signal)
 		signal.Notify(signalChannel, os.Interrupt, os.Kill)
