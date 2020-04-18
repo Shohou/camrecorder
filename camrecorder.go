@@ -4,6 +4,8 @@ import (
 	"context"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"os"
+	"os/signal"
 	"regexp"
 	"strings"
 	"sync"
@@ -77,6 +79,14 @@ func rootCommand(cmd *cobra.Command, args []string) {
 	var wg sync.WaitGroup
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+
+	signalChannel := make(chan os.Signal)
+	signal.Notify(signalChannel, os.Interrupt, os.Kill)
+
+	go func() {
+		<-signalChannel
+		cancel()
+	}()
 
 	wg.Add(3)
 	go func() {

@@ -4,11 +4,8 @@ import (
 	"bufio"
 	"context"
 	"errors"
-	"fmt"
 	log "github.com/sirupsen/logrus"
-	"os"
 	"os/exec"
-	"os/signal"
 	"strconv"
 	"time"
 )
@@ -16,20 +13,15 @@ import (
 func RecordCamVideo(ctx context.Context, cancel context.CancelFunc) {
 	defer cancel()
 	for {
+		select {
+		case <-ctx.Done():
+			return
+		default: // Default is must to avoid blocking
+		}
+
 		ffmpegCmd := exec.Command("ffmpeg", "-use_wallclock_as_timestamps", "1", "-i", streamUrl,
 			"-vcodec", "copy", "-acodec", "copy", "-map", "0", "-f", "segment", "-segment_time", "60", "-strftime", "1",
 			"-reset_timestamps", "1", "-loglevel", "level+info", "-nostats", videoPath+"cam%Y-%m-%d_%H-%M-%S.mkv")
-
-		signalChannel := make(chan os.Signal)
-		signal.Notify(signalChannel, os.Interrupt, os.Kill)
-
-		go func() {
-			<-signalChannel
-			if ffmpegCmd.Process != nil {
-				fmt.Printf("Killing stream ffmpeg")
-				ffmpegCmd.Process.Kill()
-			}
-		}()
 
 		err := LaunchFFmpeg(ctx, "stream", ffmpegCmd)
 		if err != nil {
